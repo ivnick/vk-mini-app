@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Медальный зачет</title>
+    <title>Medal Table</title>
     <style>
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid black; padding: 8px; text-align: left; }
@@ -32,11 +32,28 @@
     <script>
         async function fetchMedals() {
             try {
-                const response = await fetch('http://109.120.133.37/vk/MedalTable.json');
+                // Используйте HTTPS URL для вашего API
+                const url = 'https://og2024-api.sports.gracenote.com/svc/games_v2.svc/json/GetMedalTable_Season?competitionSetId=1&season=2024&languageCode=2';
+                const response = await fetch(url);
                 const data = await response.json();
 
+                // Проверка наличия данных и их структура
+                if (!data.MedalTableNOC) {
+                    throw new Error('Data not found');
+                }
+
                 const tableBody = document.querySelector('#medalTable tbody');
-                data.forEach(item => {
+                const medals = data.MedalTableNOC.map(item => ({
+                    c_NOC: item.c_NOC,
+                    c_NOCShort: item.c_NOCShort,
+                    n_Total: item.n_Total,
+                    n_Gold: item.n_Gold,
+                    n_Silver: item.n_Silver,
+                    n_Bronze: item.n_Bronze,
+                    n_RankGold: item.n_RankGold
+                })).sort((a, b) => a.n_RankGold - b.n_RankGold);
+
+                medals.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${item.n_RankGold}</td>
@@ -51,6 +68,7 @@
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
+                document.querySelector('#medalTable tbody').innerHTML = '<tr><td colspan="7">Error fetching data</td></tr>';
             }
         }
 
