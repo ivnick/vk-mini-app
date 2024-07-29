@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medal Table</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Medal Table</h1>
+    <table id="medalTable">
+        <thead>
+            <tr>
+                <th>Место</th>
+                <th>Страна</th>
+                <th>Флаг</th>
+                <th>Золото</th>
+                <th>Серебро</th>
+                <th>Бронза</th>
+                <th>Всего</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Данные будут добавлены с помощью JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchMedals() {
+            try {
+                const response = await fetch('http://109.120.133.37/vk/MedalTable.json');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#medalTable tbody');
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.n_RankGold}</td>
+                        <td>${item.c_NOC}</td>
+                        <td>${item.c_NOCShort}</td>
+                        <td>${item.n_Gold}</td>
+                        <td>${item.n_Silver}</td>
+                        <td>${item.n_Bronze}</td>
+                        <td>${item.n_Total}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchMedals();
+    </script>
+</body>
+</html>
